@@ -1,22 +1,17 @@
 package quotum
 
 import (
-	"quotum/storage"
+	"github.com/vuphan121/quotum/storage"
 	"time"
 )
 
-type LimiterConfig struct {
+// AppConfig contains shared limiter configuration
+var AppConfig = struct {
 	Rate     int
 	Interval time.Duration
-	Key      string
-	Storage  storage.Storage
-}
-
-func NewLimiter(config LimiterConfig) *Limiter {
-	return &Limiter{
-		rate:     config.Rate,
-		interval: config.Interval,
-		storage:  config.Storage,
-		key:      config.Key,
-	}
+	Store    storage.Storage
+}{
+	Rate:     5,
+	Interval: 1 * time.Second,
+	Store:    storage.SharedMemoryStorage,
 }
