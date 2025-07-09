@@ -35,6 +35,7 @@ LOGGING=true
 
 API_KEY=abcde
 ```
+***Run command***
 ```text
 go mod tidy
 go run main.go
