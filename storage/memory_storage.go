@@ -1,8 +1,8 @@
 package storage
 
 import (
+	"fmt"
 	"sync"
-	"time"
 )
 
 type MemoryStorage struct {
@@ -24,11 +24,7 @@ func (m *MemoryStorage) GetState(key string) (LimiterState, error) {
 
 	state, exists := m.data[key]
 	if !exists {
-		state = LimiterState{
-			RequestCount: 0,
-			WindowStart:  time.Now(),
-		}
-		m.data[key] = state
+		return LimiterState{}, fmt.Errorf("state not found")
 	}
 	return state, nil
 }

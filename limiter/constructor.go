@@ -5,14 +5,14 @@ import (
 	"time"
 )
 
-type LimiterConfig struct {
+type Config struct {
 	Key      string
 	Rate     int
 	Interval time.Duration
 	Storage  storage.Storage
 }
 
-func NewLimiter(cfg LimiterConfig) *Limiter {
+func NewLimiter(cfg Config) *Limiter {
 	return &Limiter{
 		rate:     cfg.Rate,
 		interval: cfg.Interval,
