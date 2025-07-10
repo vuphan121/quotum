@@ -6,17 +6,19 @@ import (
 )
 
 type Config struct {
-	Key      string
-	Rate     int
-	Interval time.Duration
-	Storage  storage.Storage
+	Key       string
+	Rate      int
+	Interval  time.Duration
+	Storage   storage.Storage
+	Algorithm string
 }
 
 func NewLimiter(cfg Config) *Limiter {
 	return &Limiter{
-		rate:     cfg.Rate,
-		interval: cfg.Interval,
-		key:      cfg.Key,
-		storage:  cfg.Storage,
+		rate:      cfg.Rate,
+		interval:  cfg.Interval,
+		key:       cfg.Key,
+		storage:   cfg.Storage,
+		algorithm: cfg.Algorithm,
 	}
 }

@@ -7,12 +7,20 @@ import (
 )
 
 type Limiter struct {
-	rate     int
-	interval time.Duration
-	storage  storage.Storage
-	key      string
+	rate      int
+	interval  time.Duration
+	storage   storage.Storage
+	key       string
+	algorithm string
 }
 
 func (l *Limiter) Allow() (bool, *time.Time) {
-	return algorithms.FixedWindow(l.key, l.rate, l.interval, l.storage)
+	switch l.algorithm {
+	case "fixed":
+		return algorithms.FixedWindow(l.key, l.rate, l.interval, l.storage)
+	// case "sliding":
+	// 	return algorithms.SlidingWindow(...)
+	default:
+		return algorithms.FixedWindow(l.key, l.rate, l.interval, l.storage)
+	}
 }

@@ -12,10 +12,12 @@ import (
 )
 
 type Config struct {
-	Rate     int
-	Interval time.Duration
-	Store    storage.Storage
-	Logging  bool
+	Rate      int
+	Interval  time.Duration
+	Store     storage.Storage
+	Logging   bool
+	Algorithm string
+	APIKey    string
 }
 
 var AppConfig Config
@@ -57,12 +59,24 @@ func init() {
 		log.Fatalf("Invalid STORE: %s ('memory' or 'redis')", storeType)
 	}
 
+	algorithm := strings.ToLower(os.Getenv("ALGORITHM"))
+	if algorithm == "" {
+		algorithm = "fixed_window"
+	}
+
+	apiKey := os.Getenv("API_KEY")
+	if apiKey == "" {
+		log.Fatal("API_KEY not in .env")
+	}
+
 	logging := strings.ToLower(os.Getenv("LOGGING")) == "true"
 
 	AppConfig = Config{
-		Rate:     rate,
-		Interval: interval,
-		Store:    store,
-		Logging:  logging,
+		Rate:      rate,
+		Interval:  interval,
+		Store:     store,
+		Logging:   logging,
+		Algorithm: algorithm,
+		APIKey:    apiKey,
 	}
 }

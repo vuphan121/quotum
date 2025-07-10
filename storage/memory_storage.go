@@ -36,3 +36,15 @@ func (m *MemoryStorage) SetState(key string, state LimiterState) error {
 	m.data[key] = state
 	return nil
 }
+
+func (m *MemoryStorage) Data() map[string]LimiterState {
+	return m.data
+}
+
+func (m *MemoryStorage) Lock() {
+	m.mu.Lock()
+}
+
+func (m *MemoryStorage) Unlock() {
+	m.mu.Unlock()
+}
