@@ -27,13 +27,12 @@ git clone https://github.com/vuphan121/quotum.git
 
 ***Add .env file***
 ```text
-RATE=5
-INTERVAL=1s
+RATE=1
+INTERVAL=5s
 STORE=memory
-
+ALGORITHM=fixed_window
+API_KEY=mysecretkey123
 LOGGING=true
-
-API_KEY=abcde
 ```
 ***Run command***
 ```text
