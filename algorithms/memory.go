@@ -2,34 +2,45 @@ package algorithms
 
 import (
 	"github.com/vuphan121/quotum/storage"
-	"github.com/vuphan121/quotum/util"
 	"time"
 )
 
-func FixedWindow(key string, rate int, interval time.Duration, store storage.Storage) bool {
+func FixedWindow(key string, rate int, interval time.Duration, store storage.Storage) (bool, *time.Time) {
 	now := time.Now()
 	windowStart := now.Truncate(interval)
 
 	state, err := store.GetState(key)
-	if err != nil || !state.WindowStart.Equal(windowStart) {
-		newState := storage.LimiterState{
+	if err != nil {
+		state = storage.LimiterState{
 			WindowStart:  windowStart,
-			RequestCount: 1,
+			RequestCount: 0,
+			BannedUntil:  nil,
 		}
-		_ = store.SetState(key, newState)
-
-		util.Log("[RateLimiter] [%s] New window started at %v. Request allowed (1/%d).\n", key, windowStart, rate)
-		return true
 	}
 
+	// If user is banned, deny until ban expires
+	if state.BannedUntil != nil && now.Before(*state.BannedUntil) {
+		return false, state.BannedUntil
+	}
+
+	// If we're in a new window, reset count and window start
+	if state.WindowStart.Before(windowStart) {
+		state.WindowStart = windowStart
+		state.RequestCount = 0
+		state.BannedUntil = nil
+	}
+
+	// Allow if within rate limit
 	if state.RequestCount < rate {
 		state.RequestCount++
-		_ = store.SetState(key, state)
-
-		util.Log("[RateLimiter] [%s] Request allowed (%d/%d).\n", key, state.RequestCount, rate)
-		return true
+		state.BannedUntil = nil
+		store.SetState(key, state)
+		return true, nil
 	}
 
-	util.Log("[RateLimiter] [%s] Request rejected. Window started at %v (%d/%d).\n", key, state.WindowStart, state.RequestCount, rate)
-	return false
+	// Exceeded rate limit → ban until end of this window
+	bannedUntil := windowStart.Add(interval)
+	state.BannedUntil = &bannedUntil
+	store.SetState(key, state)
+	return false, &bannedUntil
 }

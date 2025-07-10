@@ -13,6 +13,6 @@ type Limiter struct {
 	key      string
 }
 
-func (l *Limiter) Allow() bool {
+func (l *Limiter) Allow() (bool, *time.Time) {
 	return algorithms.FixedWindow(l.key, l.rate, l.interval, l.storage)
 }

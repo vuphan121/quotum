@@ -5,6 +5,7 @@ import "time"
 type LimiterState struct {
 	RequestCount int
 	WindowStart  time.Time
+	BannedUntil  *time.Time
 }
 
 type Storage interface {
